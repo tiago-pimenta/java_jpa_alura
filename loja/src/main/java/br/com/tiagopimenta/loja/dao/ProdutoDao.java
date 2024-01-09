@@ -1,9 +1,11 @@
 package br.com.tiagopimenta.loja.dao;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import br.com.tiagopimenta.loja.modelo.Produto;
 
@@ -62,6 +64,40 @@ public class ProdutoDao {
 		return em.createQuery(jpql, BigDecimal.class)
 				.setParameter("nome", nome)
 				.getSingleResult();
+	}
+
+	public List<Produto> buscarPorParametros(String nome, BigDecimal preco, LocalDate dataCadastro){
+	
+		String jpql = "SELECT p FROM Produto p WHERE 1=1 ";
+		
+		if (nome != null && !nome.trim().isEmpty()) {
+			jpql = "AND p.nome = :nome";
+		}
+		
+		if (preco != null) {
+			jpql = "AND p.preco = :preco";
+		}
+		
+		if (dataCadastro != null) {
+			jpql = "AND p.datacadastro = :datacadastro";
+		}
+		
+		TypedQuery<Produto> query = em.createQuery(jpql, Produto.class);
+		
+		if (nome != null && !nome.trim().isEmpty()) {
+			query.setParameter("nome", nome);
+		}
+		
+		if (preco != null) {
+			query.setParameter("preco", preco);
+		}
+		
+		if (dataCadastro != null) {
+			query.setParameter("datacadastro", dataCadastro);
+		}
+		
+		return query.getResultList();
+	
 	}
 
 }
